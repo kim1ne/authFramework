@@ -19,7 +19,7 @@ composer install
 $object = new ActiveRecord();
 ```
 ```
-$object->set('*', '*')...;
+$object->set($property, $values)...;
 ```
 ```
 $object->save();
@@ -28,7 +28,7 @@ $object->save();
 ##### Update
 
 ```
-$object->set('*', '*')...;
+$object->set($property, $values)...;
 ```
 ```
 $object->save();
