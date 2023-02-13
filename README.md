@@ -25,6 +25,15 @@ $object->set('*', '*')...;
 $object->save();
 ```
 
+##### Update
+
+```
+$object->set('*', '*')...;
+```
+```
+$object->save();
+```
+
 ##### Read
 
 ```
