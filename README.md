@@ -1,13 +1,11 @@
 # FrameworkAuthORM
 ### Quick launch of a website with an authorization system
 
-<br>
-<br>
+_______
 * Use Redis-7.0
 * Use MySQL-5.7-Win10
 * PHP 8.0+
-<br>
-<br>
+_______
 
 ```
 composer install
