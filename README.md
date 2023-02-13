@@ -39,11 +39,9 @@ $object->save();
 ```
 $object = ActiveRecord::all();
 ```
-or
 ```
 $object = ActiveRecord::find(id);
 ```
-or
 ```
 $object = ActiveRecord::findByColumn($column, $value);
 ```
