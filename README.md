@@ -32,9 +32,9 @@ $object = ActiveRecord::all();
 ```
 or
 ```
-$object = ActiveRecord::find();
+$object = ActiveRecord::find(id);
 ```
 or
 ```
-$object = ActiveRecord::findByColumn();
+$object = ActiveRecord::findByColumn($column, $value);
 ```
