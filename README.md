@@ -30,9 +30,11 @@ $object->save();
 ```
 $object = ActiveRecord::all();
 ```
+or
 ```
 $object = ActiveRecord::find();
 ```
+or
 ```
 $object = ActiveRecord::findByColumn();
 ```
