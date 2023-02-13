@@ -19,30 +19,68 @@ abstract class ActiveRecord
         $this->$name = $value;
     }
 
-    private function getColumn(object $obj): array
+    private function getColumn(): array
     {
-        $reflection = new \ReflectionClass($obj);
+        $unsetArray = ['id', 'created_at', 'updated_at'];
+        $reflection = new \ReflectionClass($this);
         $columns = [];
         foreach ($reflection->getProperties() as $prop) {
-            if ($prop->name === 'id') continue;
+            if (in_array($prop->name, $unsetArray)) continue;
             $columns[] = $prop->name;
         }
         return $columns;
     }
 
-    public function save()
+    public function save(): static
     {
-        $this->set('created_at', date("Y-m-d H:i:s"));
+        if ($this->id) {
+            return $this->update();
+        }
+
+        return $this->add();
+    }
+
+    private function update(): static
+    {
+        $properties = $this->getColumn();
+        $param2values = [];
+        $column2params = [];
+        $i = 1;
+        foreach ($properties as $property) {
+            $key = ":param" . $i;
+            $column2params[] = $property . ' = ' . $key;
+            $param2values[$key] = $this->$property;
+            $i++;
+        }
+
+        $sql = "UPDATE " . static::getTableName() . " SET " . implode(', ', $column2params) . " WHERE id = " . $this->id;
+        $db = new Db();
+        $db->sql($sql);
+        $db->execute($param2values);
+        return $this;
+    }
+
+    private function add(): static
+    {
         $columns = [];
         $values = [];
-        foreach ($this->getColumn($this) as $propName) {
-            $values[] = "'" . $this->$propName . "'";
-            $columns[] = '`' . $propName . '`';
+        $param2values = [];
+        $i = 1;
+        foreach ($this->getColumn() as $propName) {
+            $key = ":param" . $i;
+            $columns[] = $propName;
+            $values[] = $key;
+            $param2values[$key] = $this->$propName;
+            $i++;
         }
+        $columns[] = 'created_at';
+        $values[] = ":param" . $i;
+        $param2values[":param" . $i] = date("Y-m-d H:i:s");
+
         $sql = 'INSERT INTO ' . static::getTableName() . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ');';
         $db = new Db();
         $db->sql($sql);
-        $db->execute();
+        $db->execute($param2values);
         $this->id = $db->lastInsertId();
         return $this;
     }

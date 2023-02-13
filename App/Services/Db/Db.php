@@ -42,19 +42,23 @@ class Db
             $sth->execute($parameters);
             return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
         } catch (\Exception $e) {
-            throw new \Exception($this->db->errorInfo());
+            throw new \Exception(implode(', ', $this->db->errorInfo()));
         }
+    }
+
+    public function execute(array $parameters = []): void
+    {
+        try {
+            $sth = $this->db->prepare($this->sql);
+            $sth->execute($parameters);
+        } catch (\Exception $e) {
+            throw new \Exception(implode(', ', $this->db->errorInfo()));
+        }
+
     }
 
     public function lastInsertId(): int
     {
         return $this->db->lastInsertId();
-    }
-
-    public function execute($parameters = [])
-    {
-        $sth = $this->db->prepare($this->sql);
-        $sth->execute($parameters);
-        return $this;
     }
 }
