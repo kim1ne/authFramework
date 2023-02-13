@@ -7,9 +7,9 @@
 composer install
 ```
 
-> ORM
+###### ORM
 
-###### Create
+##### Create
 
 ```
 $object = new ActiveRecord();
@@ -17,7 +17,7 @@ $object->set('*', '*')...;
 $object->save();
 ```
 
-###### Read
+##### Read
 
 ```
 $object = ActiveRecord::all();
