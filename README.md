@@ -17,7 +17,11 @@ composer install
 
 ```
 $object = new ActiveRecord();
+```
+```
 $object->set('*', '*')...;
+```
+```
 $object->save();
 ```
 
@@ -25,6 +29,10 @@ $object->save();
 
 ```
 $object = ActiveRecord::all();
+```
+```
 $object = ActiveRecord::find();
+```
+```
 $object = ActiveRecord::findByColumn();
 ```
