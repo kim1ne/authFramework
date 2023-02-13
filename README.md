@@ -6,3 +6,21 @@
 ```
 composer install
 ```
+
+### ORM
+
+> Create
+
+```
+$object = new ActiveRecord();
+$object->set('*', '*')...;
+$object->save();
+```
+
+> Read
+
+```
+$object = ActiveRecord::all();
+$object = ActiveRecord::find();
+$object = ActiveRecord::findByColumn();
+```
