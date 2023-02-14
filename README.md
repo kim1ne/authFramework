@@ -19,7 +19,16 @@ composer install
 $object = new ActiveRecord();
 ```
 ```
-$object->set('*', '*')...;
+$object->set($property, $values)...;
+```
+```
+$object->save();
+```
+
+##### Update
+
+```
+$object->set($property, $values)...;
 ```
 ```
 $object->save();
@@ -30,11 +39,9 @@ $object->save();
 ```
 $object = ActiveRecord::all();
 ```
-or
 ```
 $object = ActiveRecord::find(id);
 ```
-or
 ```
 $object = ActiveRecord::findByColumn($column, $value);
 ```
