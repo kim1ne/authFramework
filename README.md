@@ -45,3 +45,13 @@ $object = ActiveRecord::find(id);
 ```
 $object = ActiveRecord::findByColumn($column, $value);
 ```
+
+##### Delete
+
+```
+$object->delete();
+```
+
+```
+ActiveRecord::remove($id);
+```
