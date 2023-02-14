@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\User;
+namespace App\Http\Controllers\User;
 
 use App\Models\User;
 use App\Services\Db\Builder;

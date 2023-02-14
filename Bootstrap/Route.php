@@ -60,10 +60,10 @@ class Route
         return self::$delete;
     }
 
-    public static function error(int $code): void
+    public static function error(int $code, string $descripton = null): void
     {
         ob_start();
-        view('error', ['error' => $code]);
+        view('error', ['error' => $code, 'description' => $descripton]);
         $page = ob_get_clean();
 
         $response =  (new HtmlResponse($page, $code));
@@ -73,8 +73,13 @@ class Route
         die;
     }
 
-    public static function group(array $settings, $function)
+    public static function all()
     {
-
+        return [
+            self::$delete ?? [],
+            self::$post ?? [],
+            self::$put ?? [],
+            self::$get ?? [],
+        ];
     }
 }

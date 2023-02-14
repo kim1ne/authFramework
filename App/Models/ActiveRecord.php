@@ -54,7 +54,7 @@ abstract class ActiveRecord
         }
 
         $sql = "UPDATE " . static::getTableName() . " SET " . implode(', ', $column2params) . " WHERE id = " . $this->id;
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         $db->execute($param2values);
         return $this;
@@ -78,7 +78,7 @@ abstract class ActiveRecord
         $param2values[":param" . $i] = date("Y-m-d H:i:s");
 
         $sql = 'INSERT INTO ' . static::getTableName() . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ');';
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         $db->execute($param2values);
         $this->id = $db->lastInsertId();
@@ -88,7 +88,7 @@ abstract class ActiveRecord
     public static function all(): array
     {
         $sql = 'SELECT * FROM ' . static::getTableName() . ';';
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         return $db->fetchAll();
     }
@@ -96,7 +96,7 @@ abstract class ActiveRecord
     public static function unique(string $column, $value): bool
     {
         $sql = "SELECT COUNT($column) as count FROM " . static::getTableName() . " WHERE login = '$value';";
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         if ($db->fetch()['count'] <= 1) return false;
         return true;
@@ -105,7 +105,7 @@ abstract class ActiveRecord
     public static function find(int $id): ?static
     {
         $sql = "SELECT * FROM " . static::getTableName() . " WHERE id = :id";
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         return $db->getObject([":id" => $id], static::class)[0] ?? null;
     }
@@ -113,7 +113,7 @@ abstract class ActiveRecord
     public static function findByColumn(string $column, string $value): ?static
     {
         $sql = "SELECT * FROM " . static::getTableName() . " WHERE $column = :value";
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         return $db->getObject([":value" => $value], static::class)[0] ?? null;
     }
@@ -121,7 +121,7 @@ abstract class ActiveRecord
     public function delete(): bool
     {
         $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         return $db->execute([':id' => $this->id]);
     }
@@ -129,7 +129,7 @@ abstract class ActiveRecord
     public static function remove(int $id)
     {
         $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
-        $db = new Db();
+        $db = Db::getInstance();
         $db->sql($sql);
         return $db->execute([':id' => $id]);
     }

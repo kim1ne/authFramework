@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\Controllers\User;
+namespace App\Http\Controllers\User;
 
 
-use App\ControllerServices\User\MainControllerServices;
+use App\Http\ControllerServices\User\MainControllerServices;
 use App\Exceptions\UserException;
 use App\Models\User;
 use App\Services\Auth;
@@ -52,5 +52,10 @@ class MainController
         } catch (UserException $exception) {
             echo $exception->getMessage();
         }
+    }
+
+    public function posts()
+    {
+        User::remove(48);
     }
 }

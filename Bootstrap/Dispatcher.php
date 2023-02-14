@@ -8,12 +8,12 @@ use Zend\Diactoros\ServerRequestFactory;
 
 final class Dispatcher
 {
-    private string $route;
-    private string $controllerName;
-    private string $action;
-    private array $matches;
-    private string $middleware;
-    private string $name;
+    public string $route;
+    public string $controllerName;
+    public string $action;
+    public array $matches;
+    public ?string $middleware;
+    public ?string $name;
 
     /**
      * Dispatcher constructor.
@@ -26,8 +26,8 @@ final class Dispatcher
         $this->route = $route;
         $this->controllerName = $controllerName;
         $this->action = $action;
-        $this->middleware = '';
-        $this->name = '';
+        $this->middleware = null;
+        $this->name = null;
     }
 
     public function __get(string $name)

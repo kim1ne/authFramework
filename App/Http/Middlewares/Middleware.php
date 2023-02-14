@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Middlewares;
+namespace App\Http\Middlewares;
 
 use Bootstrap\Route;
 
 class Middleware
 {
-    const FOLDER_WARES = 'Wares';
+    const FOLDER_MIDDLEWARES = 'Wares';
+    const PREFIX = 'Middleware';
 
     private string $middleware;
 
@@ -22,11 +23,10 @@ class Middleware
 
     public function run()
     {
-        $prefix = basename(str_replace('\\', '/', get_class()));
-        $middleware = __NAMESPACE__ . '\\' . self::FOLDER_WARES . '\\' . ucfirst(strtolower($this->middleware)) . $prefix;
+        $middleware = __NAMESPACE__ . '\\' . self::FOLDER_MIDDLEWARES . '\\' . ucfirst(strtolower($this->middleware)) . self::PREFIX;
         $middleware = new $middleware();
         if (!$middleware->verify()) {
-            Route::error($middleware->errorCode());
+            Route::error(...$middleware->error());
         }
     }
 }

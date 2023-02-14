@@ -22,3 +22,17 @@ function debug($str)
     print_r($str);
     echo '</pre>';
 }
+
+function href(string $name)
+{
+    $packs = \Bootstrap\Route::all();
+    $routes = [];
+    foreach ($packs as $pack) {
+        foreach ($pack as $route) {
+            if (cleanRoute($route->name) === $name) {
+                return $route->route;
+            }
+        }
+    }
+    return false;
+}

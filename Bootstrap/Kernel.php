@@ -2,7 +2,7 @@
 
 namespace Bootstrap;
 
-use App\Middlewares\Middleware;
+use App\Http\Middlewares\Middleware;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\SapiEmitter;
 
@@ -16,7 +16,7 @@ final class Kernel
             Route::error(404);
         }
 
-        if ($dispatcher->middleware !== '') {
+        if (isset($dispatcher->middleware)) {
             new Middleware($dispatcher->middleware);
         }
 

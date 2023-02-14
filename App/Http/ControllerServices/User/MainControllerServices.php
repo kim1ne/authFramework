@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\ControllerServices\User;
+namespace App\Http\ControllerServices\User;
 
 
 use App\Exceptions\UserException;
