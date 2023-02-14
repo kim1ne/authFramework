@@ -118,5 +118,21 @@ abstract class ActiveRecord
         return $db->getObject([":value" => $value], static::class)[0] ?? null;
     }
 
+    public function delete(): bool
+    {
+        $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
+        $db = new Db();
+        $db->sql($sql);
+        return $db->execute([':id' => $this->id]);
+    }
+
+    public static function remove(int $id)
+    {
+        $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
+        $db = new Db();
+        $db->sql($sql);
+        return $db->execute([':id' => $id]);
+    }
+
     abstract public static function getTableName(): string;
 }
