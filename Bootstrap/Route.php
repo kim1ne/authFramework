@@ -60,10 +60,10 @@ class Route
         return self::$delete;
     }
 
-    public static function error(int $code, string $descripton = null): void
+    public static function error(int $code, string $description = null): void
     {
         ob_start();
-        view('error', ['error' => $code, 'description' => $descripton]);
+        view('error', ['error' => $code, 'description' => $description]);
         $page = ob_get_clean();
 
         $response =  (new HtmlResponse($page, $code));

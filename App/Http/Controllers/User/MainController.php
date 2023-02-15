@@ -8,6 +8,7 @@ use App\Http\ControllerServices\User\MainControllerServices;
 use App\Exceptions\UserException;
 use App\Models\User;
 use App\Services\Auth;
+use App\Services\Db\Builder;
 use Zend\Diactoros\ServerRequestFactory;
 
 class MainController
@@ -56,6 +57,7 @@ class MainController
 
     public function posts()
     {
-        User::remove(48);
+        $data = Builder::query('SELECT * FROM `users`');
+        debug($data->getObject());
     }
 }

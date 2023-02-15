@@ -1,20 +1,20 @@
 <?php
 
-$startScriptTime=microtime(true);
+use App\Http\Middlewares\Exceptions\MiddlewareException;
 
-chdir(dirname(__DIR__));
+try {
+    chdir(dirname(__DIR__));
 
-require 'vendor/autoload.php';
+    require 'vendor/autoload.php';
 
-require 'functions.php';
+    require 'functions.php';
 
-require 'routes.php';
+    require 'routes.php';
 
-require 'dev.php';
+    require 'dev.php';
 
-$app = new Bootstrap\Kernel();
-$app->start();
-
-$endScriptTime = microtime(true);
-$totalScriptTime = $endScriptTime-$startScriptTime;
-echo 'Load time: '.number_format($totalScriptTime, 4).' seconds';
+    $app = new Bootstrap\Kernel();
+    $app->start();
+} catch (MiddlewareException $exception) {
+    $exception->wrong();
+}

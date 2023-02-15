@@ -85,6 +85,14 @@ abstract class ActiveRecord
         return $this;
     }
 
+    public function delete(): bool
+    {
+        $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
+        $db = Db::getInstance();
+        $db->sql($sql);
+        return $db->execute([':id' => $this->id]);
+    }
+
     public static function all(): array
     {
         $sql = 'SELECT * FROM ' . static::getTableName() . ';';
@@ -116,14 +124,6 @@ abstract class ActiveRecord
         $db = Db::getInstance();
         $db->sql($sql);
         return $db->getObject([":value" => $value], static::class)[0] ?? null;
-    }
-
-    public function delete(): bool
-    {
-        $sql = "DELETE FROM " . static::getTableName() . " WHERE id = :id";
-        $db = Db::getInstance();
-        $db->sql($sql);
-        return $db->execute([':id' => $this->id]);
     }
 
     public static function remove(int $id)
