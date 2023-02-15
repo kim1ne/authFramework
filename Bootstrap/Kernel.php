@@ -12,10 +12,6 @@ final class Kernel
     {
         $dispatcher = Dispatcher::return();
 
-        new Env();
-
-        debug($_ENV);
-
         if (!$dispatcher) {
             Route::error(404);
         }
