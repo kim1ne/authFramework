@@ -17,4 +17,6 @@ try {
     $app->start();
 } catch (WrongExceptionInterface $exception) {
     $exception->wrong();
+} catch (PDOException $exception) {
+    debug($exception->getLine());
 }

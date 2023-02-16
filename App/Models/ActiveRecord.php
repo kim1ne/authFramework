@@ -6,8 +6,9 @@ use App\Services\Db\Db;
 
 abstract class ActiveRecord
 {
-    protected $id;
-    protected $created_at;
+    const UNSET_PROPERTY = ['id', 'created_at', 'updated_at'];
+
+    protected int $id;
 
     public function __get($name): mixed
     {
@@ -21,19 +22,28 @@ abstract class ActiveRecord
 
     private function getColumn(): array
     {
-        $unsetArray = ['id', 'created_at', 'updated_at'];
         $reflection = new \ReflectionClass($this);
         $columns = [];
         foreach ($reflection->getProperties() as $prop) {
-            if (in_array($prop->name, $unsetArray)) continue;
             $columns[] = $prop->name;
         }
         return $columns;
     }
 
+    private function secureProp(): array
+    {
+        $columns = $this->getColumn();
+        $new = [];
+        foreach ($columns as $column) {
+            if (in_array($column, self::UNSET_PROPERTY)) continue;
+            $new[] = $column;
+        }
+        return $new;
+    }
+
     public function save(): static
     {
-        if ($this->id) {
+        if (!empty($this->id)) {
             return $this->update();
         }
 
@@ -42,7 +52,7 @@ abstract class ActiveRecord
 
     private function update(): static
     {
-        $properties = $this->getColumn();
+        $properties = $this->secureProp();
         $param2values = [];
         $column2params = [];
         $i = 1;
@@ -52,6 +62,10 @@ abstract class ActiveRecord
             $param2values[$key] = $this->$property;
             $i++;
         }
+
+        $param2values[":param" . $i] = date("Y-m-d H:i:s");
+        $key = ":param" . $i;
+        $column2params[] = 'updated_at' . " = " . $key;
 
         $sql = "UPDATE " . static::getTableName() . " SET " . implode(', ', $column2params) . " WHERE id = " . $this->id;
         $db = Db::getInstance();
@@ -66,7 +80,7 @@ abstract class ActiveRecord
         $values = [];
         $param2values = [];
         $i = 1;
-        foreach ($this->getColumn() as $propName) {
+        foreach ($this->secureProp() as $propName) {
             $key = ":param" . $i;
             $columns[] = $propName;
             $values[] = $key;

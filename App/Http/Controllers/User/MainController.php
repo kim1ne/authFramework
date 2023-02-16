@@ -57,7 +57,8 @@ class MainController
 
     public function posts()
     {
-        $data = Builder::query('SELECT * FROM `users`');
-        debug($data->getObject());
+        $user = User::find(49);
+        $user->set('login', '12312412453245dagvsab');
+        $user->save();
     }
 }

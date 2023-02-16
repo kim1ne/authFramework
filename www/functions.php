@@ -21,7 +21,7 @@ function view($pathTemplate, $vars = [])
 function debug($str)
 {
     echo '<pre>';
-    print_r($str);
+    var_dump($str);
     echo '</pre>';
 }
 
