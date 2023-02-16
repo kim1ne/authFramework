@@ -10,7 +10,7 @@ class AuthMiddleware
 {
     public function verify(): bool
     {
-        return User::isAuth();
+        return is_int(User::isAuth());
     }
 
     public function error(): array

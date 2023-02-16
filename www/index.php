@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Middlewares\Exceptions\MiddlewareException;
+use App\Exceptions\WrongExceptionInterface;
 
 try {
     chdir(dirname(__DIR__));
@@ -15,6 +15,6 @@ try {
 
     $app = new Bootstrap\Kernel();
     $app->start();
-} catch (MiddlewareException $exception) {
+} catch (WrongExceptionInterface $exception) {
     $exception->wrong();
 }

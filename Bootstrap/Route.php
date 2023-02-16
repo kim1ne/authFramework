@@ -60,19 +60,6 @@ class Route
         return self::$delete;
     }
 
-    public static function error(int $code, string $description = null): void
-    {
-        ob_start();
-        view('error', ['error' => $code, 'description' => $description]);
-        $page = ob_get_clean();
-
-        $response =  (new HtmlResponse($page, $code));
-
-        $emmiter = new SapiEmitter();
-        $emmiter->emit($response);
-        die;
-    }
-
     public static function all()
     {
         return [

@@ -1,5 +1,7 @@
 <?php
 
+use Zend\Diactoros\ServerRequestFactory;
+
 function cleanRoute($str)
 {
     return preg_replace('/(^\/)|(\/$)/', '', $str);
@@ -26,7 +28,6 @@ function debug($str)
 function href(string $name)
 {
     $packs = \Bootstrap\Route::all();
-    $routes = [];
     foreach ($packs as $pack) {
         foreach ($pack as $route) {
             if (cleanRoute($route->name) === $name) {
@@ -34,5 +35,13 @@ function href(string $name)
             }
         }
     }
-    return false;
+    return '';
+}
+
+function jsonSerialize()
+{
+    $request = ServerRequestFactory::fromGlobals();
+    $accepted = $request->getHeaders()['accept'][0];
+    $stringFind = strpos('application/json', $accepted);
+    return is_int($stringFind);
 }

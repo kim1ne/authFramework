@@ -13,7 +13,7 @@ final class Kernel
         $dispatcher = Dispatcher::return();
 
         if (!$dispatcher) {
-            Route::error(404);
+            Response::error(404, 'Страница не найдена');
         }
 
         if (isset($dispatcher->middleware)) {

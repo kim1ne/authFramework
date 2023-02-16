@@ -19,7 +19,9 @@ class User extends ActiveRecord
         setcookie('auth', $cryptLogin, time() + self::SESSION_TIME, '/');
         $redis = new \Redis();
         $redis->connect(self::REDIS_CONNECT);
-        $redis->set(Crypt::encode($cryptLogin), $this->id, self::SESSION_TIME);
+        $token = Crypt::encode($cryptLogin);
+        $redis->set($token, $this->id, self::SESSION_TIME);
+        return $token;
     }
 
     public static function current(): bool|self
@@ -41,18 +43,23 @@ class User extends ActiveRecord
     public static function isAuth(): bool|int
     {
         $request = ServerRequestFactory::fromGlobals();
-        $cookieData = $request->getCookieParams()['auth'] ?? [];
+        $userData = $request->getCookieParams()['auth'] ?? [];
 
-        if (empty($cookieData)) {
+        if (empty($userData) && !empty($request->getHeaders()['x-auth'])) {
+            $userData = $request->getHeaders()['x-auth'][0];
+        }
+
+
+        if (empty($userData)) {
             return false;
         }
 
         $redis = new \Redis();
         $redis->connect('127.0.0.1');
-        $sessionToken = Crypt::encode($cookieData);
+        $sessionToken = Crypt::encode($userData);
 
         if (!$redis->get($sessionToken)) {
-            setcookie('auth', '', time()-(60*60*24), '/');
+            setcookie('auth', '', time()-(self::SESSION_TIME), '/');
         }
 
         return $redis->get($sessionToken);
