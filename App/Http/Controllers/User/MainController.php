@@ -54,11 +54,4 @@ class MainController
             echo $exception->getMessage();
         }
     }
-
-    public function posts()
-    {
-        $user = User::find(49);
-        $user->set('login', '12312412453245dagvsab');
-        $user->save();
-    }
 }

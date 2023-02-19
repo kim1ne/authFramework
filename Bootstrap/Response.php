@@ -9,16 +9,16 @@ use Zend\Diactoros\ServerRequestFactory;
 
 class Response
 {
-    public static function error(int $code, string $description = null): void
+    public static function error(int $code = 404, string $description = 'Страница не найдена'): void
     {
-        if (jsonSerialize()) {
-            $responseArray = ['error' => $description];
-            $response = new JsonResponse($responseArray, $code);
-        } else {
+        if (!jsonSerialize()) {
             ob_start();
             view('error', ['error' => $code, 'description' => $description]);
             $page = ob_get_clean();
             $response =  (new HtmlResponse($page, $code));
+        } else {
+            $responseArray = ['error' => $description];
+            $response = new JsonResponse($responseArray, $code);
         }
 
         self::emit($response);

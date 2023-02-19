@@ -3,39 +3,51 @@
 namespace Bootstrap;
 
 use App\Http\Middlewares\Middleware;
-use Psr\Http\Message\ResponseInterface;
+use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\SapiEmitter;
 
 final class Kernel
 {
+    const X_DEVELOPER = 'Kim_1ne';
+
+    private \Zend\Diactoros\Response $response;
+
     public function start(): void
     {
         $dispatcher = Dispatcher::return();
 
-        if ($dispatcher === true) {
-            Response::error(404, 'Это файл');
-        }
-
         if ($dispatcher === false) {
-            Response::error(404, 'Страница не найдена');
+            Response::error();
         }
 
-        if (isset($dispatcher->middleware)) {
-            new Middleware($dispatcher->middleware);
+        if (!empty($dispatcher->middleware)) {
+            foreach ($dispatcher->middleware as $middle) {
+                new Middleware($middle);
+            }
         }
 
-        $this->actionDomainResponder($dispatcher->controllerName, $dispatcher->action, $dispatcher->matches);
+        $this->actionDomainResponder($dispatcher);
+
+        $this->emit();
     }
 
-    private function actionDomainResponder(string $controllerName, string $action, array $matches)
+    private function actionDomainResponder(Dispatcher $dispatcher)
     {
+        $controllerName = $dispatcher->controllerName;
+        $action = $dispatcher->action;
         $controller = new $controllerName();
-        $controller->$action(...$matches);
+        $response = $controller->$action(...$dispatcher->matches);
+
+        if ($response instanceof \Zend\Diactoros\Response) {
+            $this->response = $response->withHeader('X-Developer', self::X_DEVELOPER);
+        } else {
+            $this->response = new EmptyResponse();
+        }
     }
 
-    private function emit(ResponseInterface $response)
+    private function emit()
     {
-        $emmiter = new SapiEmitter();
-        $emmiter->emit($response);
+        $emit = new SapiEmitter();
+        $emit->emit($this->response);
     }
 }

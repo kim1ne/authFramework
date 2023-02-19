@@ -69,4 +69,8 @@ class Route
             self::$get ?? [],
         ];
     }
+
+    public static function redirect(string $url, int $responseCode = 301) {
+        header('Location: ' . $url, true, $responseCode);
+    }
 }

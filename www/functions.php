@@ -14,8 +14,26 @@ function prepareRoute($str)
 
 function view($pathTemplate, $vars = [])
 {
-    extract($vars);
-    return require 'templates/' . $pathTemplate . '.php';
+    $request = ServerRequestFactory::fromGlobals();
+    $header = $request->getHeaders();
+    preg_match('~application\/(\w+)~', $header['accept'][0], $matches);
+
+    if (is_array($matches)) $matches = $matches[0];
+
+    switch ($matches) {
+        case 'application/xhtml':
+            extract($vars);
+            ob_start();
+            require 'templates/' . $pathTemplate . '.php';
+            $html = ob_get_clean();
+            $response = new \Zend\Diactoros\Response\HtmlResponse($html);
+            break;
+        default :
+            $response = new \Zend\Diactoros\Response\JsonResponse(['data' => ['result' => $vars]]);
+            break;
+    }
+
+    return $response;
 }
 
 function debug($str)

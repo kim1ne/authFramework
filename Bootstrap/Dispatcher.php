@@ -12,7 +12,7 @@ final class Dispatcher
     public string $controllerName;
     public string $action;
     public array $matches;
-    public ?string $middleware;
+    public array $middleware;
     public ?string $name;
 
     /**
@@ -26,7 +26,7 @@ final class Dispatcher
         $this->route = $route;
         $this->controllerName = $controllerName;
         $this->action = $action;
-        $this->middleware = null;
+        $this->middleware = [];
         $this->name = null;
     }
 
@@ -51,16 +51,16 @@ final class Dispatcher
             if (!empty($matches)) {
                 unset($matches[0]);
                 $self->matches = $matches;
-                $dispatcher['dispatcher'] = $self;
                 return $self;
             }
         }
         return false;
     }
 
-    public function middleware(string $middleware): self
+    public function middleware($middleware): self
     {
-        $this->middleware = $middleware;
+        if (is_string($middleware)) $this->middleware[] = $middleware;
+        if (is_array($middleware)) $this->middleware = $middleware;
         return $this;
     }
 

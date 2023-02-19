@@ -27,17 +27,20 @@ class User extends ActiveRecord
     public static function current(): bool|self
     {
         $request = ServerRequestFactory::fromGlobals();
-        $cookieData = $request->getCookieParams()['auth'] ?? [];
+        $userData = $request->getCookieParams()['auth'] ?? [];
 
-        $redis = new \Redis();
-        $redis->connect(self::REDIS_CONNECT);
-        if (empty($cookieData)) {
-            $redis->del('auth');
+        if (!empty($request->getHeaders()['authorization'])) {
+            $userData = $request->getHeaders()['authorization'][0];
+        }
+
+        if (empty($userData)) {
             return false;
         }
 
-        $userId = $redis->get(Crypt::encode($cookieData));
-        return self::find($userId);
+        $redis = new \Redis();
+        $redis->connect(self::REDIS_CONNECT);
+        $userId = $redis->get(Crypt::encode($userData));
+        return self::find($userId) ?? false;
     }
 
     public static function isAuth(): bool|int
@@ -45,8 +48,8 @@ class User extends ActiveRecord
         $request = ServerRequestFactory::fromGlobals();
         $userData = $request->getCookieParams()['auth'] ?? [];
 
-        if (empty($userData) && !empty($request->getHeaders()['x-auth'])) {
-            $userData = $request->getHeaders()['x-auth'][0];
+        if (empty($userData) && !empty($request->getHeaders()['authorization'])) {
+            $userData = $request->getHeaders()['authorization'][0];
         }
 
 

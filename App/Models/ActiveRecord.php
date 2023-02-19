@@ -4,15 +4,27 @@ namespace App\Models;
 
 use App\Services\Db\Db;
 
-abstract class ActiveRecord
+abstract class ActiveRecord implements \JsonSerializable
 {
     const UNSET_PROPERTY = ['id', 'created_at', 'updated_at'];
 
     protected int $id;
+    protected string $created_at;
+    protected ?string $updated_at;
 
     public function __get($name): mixed
     {
         return $this->$name;
+    }
+
+    public function jsonSerialize(): array
+    {
+        $data = [];
+        foreach ($this->getColumn() as $propName) {
+            if ($this instanceof User && $propName === 'password') continue;
+            $data[$propName] = $this->$propName;
+        }
+        return $data;
     }
 
     public function set(string $name, string $value): void
@@ -92,6 +104,7 @@ abstract class ActiveRecord
         $param2values[":param" . $i] = date("Y-m-d H:i:s");
 
         $sql = 'INSERT INTO ' . static::getTableName() . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ');';
+
         $db = Db::getInstance();
         $db->sql($sql);
         $db->execute($param2values);
@@ -124,7 +137,7 @@ abstract class ActiveRecord
         return true;
     }
 
-    public static function find(int $id): ?static
+    public static function find(int $id): static|null
     {
         $sql = "SELECT * FROM " . static::getTableName() . " WHERE id = :id";
         $db = Db::getInstance();

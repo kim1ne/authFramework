@@ -11,12 +11,9 @@ try {
 
     require 'routes.php';
 
-    require 'dev.php';
-
     $app = new Bootstrap\Kernel();
     $app->start();
+
 } catch (WrongExceptionInterface $exception) {
     $exception->wrong();
-} catch (PDOException $exception) {
-    debug($exception->getLine());
 }

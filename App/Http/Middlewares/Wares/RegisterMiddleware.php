@@ -4,21 +4,20 @@
 namespace App\Http\Middlewares\Wares;
 
 
-use App\Http\Middlewares\BaseMiddlewareInterface;
 use App\Models\User;
 
-class AuthMiddleware implements BaseMiddlewareInterface
+class RegisterMiddleware
 {
     public function verify(): bool
     {
-        return is_int(User::isAuth());
+        return false;
     }
 
     public function error(): array
     {
         return [
             401,
-            'Ошибка авторизации'
+            'Пользователь не зарегистрирован'
         ];
     }
 }
