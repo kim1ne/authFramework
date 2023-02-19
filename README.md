@@ -11,7 +11,7 @@ _______
 composer install
 ```
 
-### ORM
+## ORM
 
 ##### Create
 
@@ -66,7 +66,7 @@ ActiveRecord::unique($column, $value);
 
 _______
 
-### User auth
+## User auth
 
 User sessions are stored in redis. In the App\Models\User class, the SESSION_TIME constant contains the session time.
 
@@ -108,10 +108,10 @@ User::isAuth() - check session user
 
 _______
 
-### Middleware
+## Middleware
 
 Registration middleware is not needed. The route is indicated. next the middleware() function is called. It accepts either an array or a string.
-## File www/routes.php
+### File www/routes.php
 
 
 ```
@@ -145,11 +145,21 @@ class AuthMiddleware implements BaseMiddlewareInterface
 
 _______
 
-### REST-API
+## REST-API
 
 When a user submits a request, the received user session token received during authorization must be transmitted. The token is passed in the headers[Authorize]. The token is needed if you want to use authorization
 
+### 1
+```
 $token = $user->authorize();
+return view(['token' => $token])
+```
+### 2
+
+Token placed in headers[Authorize]
+_______
+
+## Database
 
 _______
 
