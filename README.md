@@ -55,3 +55,11 @@ $object->delete();
 ```
 ActiveRecord::remove($id);
 ```
+
+_______
+
+##### Check unique
+
+```
+ActiveRecord::unique($column, $value);
+```
