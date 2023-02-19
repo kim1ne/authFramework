@@ -5,7 +5,7 @@ namespace Bootstrap;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\SapiEmitter;
 
-class Route
+final class Route
 {
     private static array $get;
     private static array $post;
