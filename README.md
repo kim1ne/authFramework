@@ -103,6 +103,7 @@ User::isAuth();
 ```
 
 User::current() - return user from database
+
 User::isAuth() - check session user
 
 _______
