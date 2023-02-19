@@ -63,3 +63,46 @@ _______
 ```
 ActiveRecord::unique($column, $value);
 ```
+
+_______
+
+### User auth
+
+User sessions are stored in redis. In the App\Models\User class, the SESSION_TIME constant contains the session time.
+
+##### User registration
+
+```
+$user = new User();
+$user->set($column, $value);
+$user->save();
+```
+
+##### User authorization
+
+```
+$user->auth();
+```
+
+##### User logout
+
+```
+$user->logout();
+```
+
+##### Current user
+
+```
+$user = User::current;
+```
+
+##### Check auth user
+
+```
+User::isAuth();
+```
+
+User::current() - return user from database
+User::isAuth() - check session user
+
+_______
