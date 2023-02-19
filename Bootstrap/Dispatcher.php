@@ -35,7 +35,7 @@ final class Dispatcher
         return $this->$name;
     }
 
-    public static function return(): false|self
+    public static function return(): bool|self
     {
         $request = ServerRequestFactory::fromGlobals();
         $uri = cleanRoute($request->getUri()->getPath());
@@ -51,6 +51,7 @@ final class Dispatcher
             if (!empty($matches)) {
                 unset($matches[0]);
                 $self->matches = $matches;
+                $dispatcher['dispatcher'] = $self;
                 return $self;
             }
         }

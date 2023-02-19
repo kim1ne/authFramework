@@ -8,11 +8,15 @@ use Zend\Diactoros\Response\SapiEmitter;
 
 final class Kernel
 {
-    final public function start(): void
+    public function start(): void
     {
         $dispatcher = Dispatcher::return();
 
-        if (!$dispatcher) {
+        if ($dispatcher === true) {
+            Response::error(404, 'Это файл');
+        }
+
+        if ($dispatcher === false) {
             Response::error(404, 'Страница не найдена');
         }
 

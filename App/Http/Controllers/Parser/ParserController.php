@@ -1,28 +1,28 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Parser;
 
-use App\Models\User;
-use App\Services\Db\Builder;
+use App\Http\Parser\Parser;
 use Zend\Diactoros\ServerRequestFactory;
 
-class IndexController
+class ParserController
 {
     public function index()
     {
-        if (!User::isAuth()) {
-            return view('index');
-        }
+        $client = new \GuzzleHttp\Client(['base_uri' => 'https://example.com']);
+        $response = $client->request('GET');
+        debug($response->getBody()->getContents());
 
-        return view('main', ['user' => User::current()]);
+        die;
+
+        return view('parser/index', ['title'=> 'Парсинг']);
     }
 
-    public function auth()
+    public function query()
     {
-        if (User::isAuth()) {
-            header('Location: /');
-        }
-
-        return view('auth');
+        $post = ServerRequestFactory::fromGlobals()->getParsedBody();
+        if (empty($post)) die('пустой запрос');
+        $url = $post['url'];
+        Parser::parse($url);
     }
 }
