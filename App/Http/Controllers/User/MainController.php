@@ -4,11 +4,13 @@
 namespace App\Http\Controllers\User;
 
 
-use App\Http\ControllerServices\User\MainControllerServices;
 use App\Exceptions\UserException;
+use App\Http\ControllerServices\User\MainControllerServices;
+use App\Models\Photo;
 use App\Models\User;
 use App\Services\Auth;
-use App\Services\Db\Builder;
+use App\Services\Db\DataManager;
+use Bootstrap\Response;
 use Zend\Diactoros\ServerRequestFactory;
 
 class MainController
@@ -41,17 +43,26 @@ class MainController
                 header('Location: /');
             }
 
+
             $request = ServerRequestFactory::fromGlobals();
-            $data = MainControllerServices::register($request->getParsedBody());
+            $data = MainControllerServices::register($request->getParsedBody() ?? []);
 
             $user = new User();
             $user->set('login', $data['login']);
             $user->set('password', $data['password']);
             $user->save();
 
-            header('Location: /auth');
+            view('main', ['status' => 'success', 'data' => $user]);
         } catch (UserException $exception) {
-            echo $exception->getMessage();
+            Response::error(200, $exception->getMessage());
         }
+    }
+
+    public function posts()
+    {
+        $dataManager = new DataManager([User::getTableName() => 'user'], ['id' => 'misha', 'login']);
+        $dataManager->join([Photo::getTableName() => 'user_photo'], ['user_id' => 'user.id'], [], DataManager::LEFT_JOIN);
+        $dataManager->limit(2);
+        debug($dataManager->build());
     }
 }

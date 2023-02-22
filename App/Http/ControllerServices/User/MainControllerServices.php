@@ -12,6 +12,14 @@ class MainControllerServices
 {
     public static function register(array $data): array
     {
+        if (empty($data['login'])) {
+            throw new UserException("Введите логин");
+        }
+
+        if (empty($data['password'])) {
+            throw new UserException("Введите пароль");
+        }
+
         $login = $data['login'];
         $unique = User::unique('login', $login);
         if ($unique) {

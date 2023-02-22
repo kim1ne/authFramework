@@ -22,7 +22,7 @@ abstract class ActiveRecord implements \JsonSerializable
         $data = [];
         foreach ($this->getColumn() as $propName) {
             if ($this instanceof User && $propName === 'password') continue;
-            $data[$propName] = $this->$propName;
+            $data[$propName] = $this->$propName ?? null;
         }
         return $data;
     }
@@ -77,6 +77,7 @@ abstract class ActiveRecord implements \JsonSerializable
 
         $param2values[":param" . $i] = date("Y-m-d H:i:s");
         $key = ":param" . $i;
+        $this->updated_at = date("Y-m-d H:i:s");
         $column2params[] = 'updated_at' . " = " . $key;
 
         $sql = "UPDATE " . static::getTableName() . " SET " . implode(', ', $column2params) . " WHERE id = " . $this->id;
@@ -101,6 +102,7 @@ abstract class ActiveRecord implements \JsonSerializable
         }
         $columns[] = 'created_at';
         $values[] = ":param" . $i;
+        $this->created_at = date("Y-m-d H:i:s");
         $param2values[":param" . $i] = date("Y-m-d H:i:s");
 
         $sql = 'INSERT INTO ' . static::getTableName() . ' (' . implode(', ', $columns) . ') VALUES (' . implode(', ', $values) . ');';

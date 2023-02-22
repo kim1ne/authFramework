@@ -7,3 +7,6 @@ Route::get('/auth', [\App\Http\Controllers\User\IndexController::class, 'auth'])
 Route::post('/register', [\App\Http\Controllers\User\MainController::class, 'register']);
 Route::post('/user/auth', [\App\Http\Controllers\User\MainController::class, 'auth']);
 Route::get('/logout', [\App\Http\Controllers\User\MainController::class, 'logout'])->name('logout');
+
+
+Route::get('/posts', [\App\Http\Controllers\User\MainController::class, 'posts'])->name('posts');

@@ -12,7 +12,7 @@ function prepareRoute($str)
     return '~^' . $str . '$~';
 }
 
-function view($pathTemplate, $vars = [])
+function view($pathTemplate, $data)
 {
     $request = ServerRequestFactory::fromGlobals();
     $header = $request->getHeaders();
@@ -22,18 +22,25 @@ function view($pathTemplate, $vars = [])
 
     switch ($matches) {
         case 'application/xhtml':
-            extract($vars);
+            extract($data['vars']);
             ob_start();
             require 'templates/' . $pathTemplate . '.php';
             $html = ob_get_clean();
-            $response = new \Zend\Diactoros\Response\HtmlResponse($html);
-            break;
+            return $html;
         default :
-            $response = new \Zend\Diactoros\Response\JsonResponse(['data' => ['result' => $vars]]);
-            break;
-    }
+            $json = [];
 
-    return $response;
+            $json['status'] = $data['status'];
+            if (!empty($data['message'])) {
+                $json['message'] = $data['message'];
+            }
+            if (!empty($data['data'])) {
+                $json['data'] = $data['data'];
+            }
+
+            $response = new \Zend\Diactoros\Response\JsonResponse($json);
+            return $response;
+    }
 }
 
 function debug($str)

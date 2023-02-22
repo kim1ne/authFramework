@@ -27,8 +27,6 @@ final class Kernel
         }
 
         $this->actionDomainResponder($dispatcher);
-
-        $this->emit();
     }
 
     private function actionDomainResponder(Dispatcher $dispatcher)
