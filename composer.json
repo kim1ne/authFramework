@@ -17,6 +17,7 @@
       "ext-openssl": "*",
       "ext-pdo": "*",
       "ext-curl": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+      "ext-mbstring": "*"
     }
 }

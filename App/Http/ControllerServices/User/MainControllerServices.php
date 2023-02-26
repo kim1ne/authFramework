@@ -1,38 +1,36 @@
 <?php
 
-
 namespace App\Http\ControllerServices\User;
 
-
-use App\Exceptions\UserException;
 use App\Models\User;
 use App\Services\Crypt;
+use Bootstrap\Response;
 
 class MainControllerServices
 {
     public static function register(array $data): array
     {
         if (empty($data['login'])) {
-            throw new UserException("Введите логин");
+            Response::error(201, "Введите логин");
         }
 
         if (empty($data['password'])) {
-            throw new UserException("Введите пароль");
+            Response::error(201, "Введите пароль");
         }
 
         $login = $data['login'];
         $unique = User::unique('login', $login);
-        if ($unique) {
-            throw new UserException("Логин `$login` занят");
+        if (!$unique) {
+            Response::error(201, "Логин `$login` занят");
         }
         foreach ($data as $paramName => $parameter) {
             if (empty($parameter)) {
-                throw new UserException("Заполните `$paramName`");
+                Response::error(201, "Заполните `$paramName`");
             }
 
             preg_match('/([а-яА-Я]+)/ui', $parameter, $match);
             if (!empty($match)) {
-                throw new UserException("Русские символы в `$paramName`");
+                Response::error(201, "Русские символы в `$paramName`");
             }
         }
 
@@ -44,7 +42,7 @@ class MainControllerServices
     public static function logout($cookieData): void
     {
         if (empty($cookieData)) {
-            throw new UserException('Вы не авторизованы');
+            Response::error(401, "Вы не авторизованы");
         }
 
         $user = User::current();

@@ -1,6 +1,6 @@
 <?php require 'document/header.php'; ?>
 <div class="container">
-    <form class="w-50 mx-auto mt-5" method="post" action="/register">
+    <form class="w-50 mx-auto mt-5" method="post" action="<?=href('user.create') ?>">
         <h2 class="text-center">Регистрация</h2>
         <div class="form-group mb-3">
             <label for="login">Логин</label>

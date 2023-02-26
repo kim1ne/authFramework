@@ -16,4 +16,6 @@ try {
 
 } catch (WrongExceptionInterface $exception) {
     $exception->wrong();
+} catch (\App\Exceptions\UserException $exception) {
+    \Bootstrap\Response::error($exception->getCode(), $exception->getMessage());
 }

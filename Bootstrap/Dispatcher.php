@@ -21,7 +21,7 @@ final class Dispatcher
      * @param string $controllerName
      * @param string $action
      */
-    public function __construct(string $route, string $controllerName, string $action)
+    public function __construct(string $route, string $controllerName, string $action = '')
     {
         $this->route = $route;
         $this->controllerName = $controllerName;
@@ -39,7 +39,8 @@ final class Dispatcher
     {
         $request = ServerRequestFactory::fromGlobals();
         $uri = cleanRoute($request->getUri()->getPath());
-        $method = 'get' . ucfirst(strtolower($request->getMethod()));
+        $method = 'get' . (new Request())->getMethod();
+
 
         $selfObjects = Route::$method();
         foreach ($selfObjects as $self) {

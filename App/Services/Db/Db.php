@@ -4,8 +4,8 @@ namespace App\Services\Db;
 
 class Db
 {
-    private $db;
-    private $sql;
+    private \PDO $db;
+    private string $sql;
     private static $instance;
 
     private function __construct()
@@ -24,23 +24,30 @@ class Db
     public function sql(string $sql)
     {
         $this->sql = $sql;
+        return $this;
     }
 
-    public function fetchAll($parameters = []):array
+    public function fetchAll($parameters = []): bool|array
     {
-        $sth = $this->db->prepare($this->sql);
-        $sth->execute($parameters);
-        return $sth->fetchAll(\PDO::FETCH_ASSOC);
+        try {
+            $sth = $this->db->prepare($this->sql);
+            $sth->execute($parameters);
+            return $sth->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+            return false;
+        }
     }
 
-    public function fetch($parameters = []):array
+    public function fetch($parameters = []): bool|array
     {
         try {
             $sth = $this->db->prepare($this->sql);
             $sth->execute($parameters);
             return $sth->fetch(\PDO::FETCH_ASSOC);
-        } catch (\Exception $e) {
-            throw new \Exception($this->db->errorInfo());
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+            return false;
         }
     }
 
@@ -50,8 +57,9 @@ class Db
             $sth = $this->db->prepare($this->sql);
             $sth->execute($parameters);
             return $sth->fetchAll(\PDO::FETCH_CLASS, $className);
-        } catch (\Exception $e) {
-            throw new \Exception(implode(', ', $this->db->errorInfo()));
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+            return false;
         }
     }
 
@@ -62,7 +70,8 @@ class Db
             $sth->execute($parameters);
             return true;
         } catch (\PDOException $e) {
-            throw new \PDOException(implode(', ', $this->db->errorInfo()));
+            echo $e->getMessage();
+            return false;
         }
 
     }

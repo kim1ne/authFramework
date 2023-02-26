@@ -1,68 +1,48 @@
 <?php
 
-
 namespace App\Http\Controllers\User;
 
-
-use App\Exceptions\UserException;
-use App\Http\ControllerServices\User\MainControllerServices;
-use App\Models\Photo;
+use App\Models\Category;
 use App\Models\User;
-use App\Services\Auth;
-use App\Services\Db\DataManager;
+use App\Services\Db\Db;
+use App\Services\Db\Orm\Select;
 use Bootstrap\Response;
+use Bootstrap\Route;
 use Zend\Diactoros\ServerRequestFactory;
 
 class MainController
 {
-    public function auth()
+    public function __invoke()
     {
-        try {
-            $request = ServerRequestFactory::fromGlobals();
+        if (!User::isAuth()) Route::redirect(href('user.register'));
 
-            Auth::auth($request->getParsedBody());
+        $select = new Select([Category::getTableName() => 'user']);
+        $select->where(['user_id' => User::isAuth()]);
+        $sql = $select->build();
 
-            header('Location: /');
-        } catch (UserException $exception) {
-            echo $exception->getMessage();
+        $db = Db::getInstance();
+        $db->sql($sql);
+        $categories = $db->fetchAll();
+        return view('categories', ['categories' => $categories]);
+    }
+
+    public function delete()
+    {
+        $user = User::current();
+
+        if (!$user) {
+            Response::error(401, 'Ошибка авторизации');
         }
-    }
 
-    public function logout()
-    {
-        $request = ServerRequestFactory::fromGlobals();
-        $cookieData = $request->getCookieParams()['auth'] ?? [];
-
-        MainControllerServices::logout($cookieData);
-    }
-
-    public function register()
-    {
-        try {
-            if (User::isAuth()) {
-                header('Location: /');
-            }
-
-
-            $request = ServerRequestFactory::fromGlobals();
-            $data = MainControllerServices::register($request->getParsedBody() ?? []);
-
-            $user = new User();
-            $user->set('login', $data['login']);
-            $user->set('password', $data['password']);
-            $user->save();
-
-            view('main', ['status' => 'success', 'data' => $user]);
-        } catch (UserException $exception) {
-            Response::error(200, $exception->getMessage());
+        if ($user->unAuthorize()) {
+            $user->delete();
+        } else {
+            Response::error(401, 'Ошибка авторизации');
         }
-    }
 
-    public function posts()
-    {
-        $dataManager = new DataManager([User::getTableName() => 'user'], ['id' => 'misha', 'login']);
-        $dataManager->join([Photo::getTableName() => 'user_photo'], ['user_id' => 'user.id'], [], DataManager::LEFT_JOIN);
-        $dataManager->limit(2);
-        debug($dataManager->build());
+        Response::json([
+            'status' => 'success',
+            'data' => 'Пользователь удалён'
+        ]);
     }
 }

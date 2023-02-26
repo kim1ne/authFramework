@@ -8,30 +8,41 @@ use Zend\Diactoros\ServerRequestFactory;
 class User extends ActiveRecord
 {
     const SESSION_TIME = 60 * 60 * 24;
+    const SECRET_KEY = 'B3EhZ1oQArNRqJJJlWhu';
     const REDIS_CONNECT = '127.0.0.1';
+    const WORK_COOKIE = false;
 
     protected string $login;
     protected string $password;
 
+    public static function userHashGetToken(string $token)
+    {
+        return $token . self::SECRET_KEY;
+    }
+
     public function authorize()
     {
         $cryptLogin = Crypt::encode($this->login);
-        setcookie('auth', $cryptLogin, time() + self::SESSION_TIME, '/');
+
+        $encode = substr($cryptLogin, 0, 20);
+
+        $currentDate = time();
+        $token = trim($currentDate) . '.' . trim($this->login) . '.' . $encode;
+
+        if (self::WORK_COOKIE) {
+            setcookie('auth', $token, time() + self::SESSION_TIME, '/');
+        }
+
         $redis = new \Redis();
         $redis->connect(self::REDIS_CONNECT);
-        $token = Crypt::encode($cryptLogin);
-        $redis->set($token, $this->id, self::SESSION_TIME);
+        $redis->set(self::userHashGetToken($token), $this->id, self::SESSION_TIME);
+
         return $token;
     }
 
-    public static function current(): bool|self
+    public function unAuthorize()
     {
-        $request = ServerRequestFactory::fromGlobals();
-        $userData = $request->getCookieParams()['auth'] ?? [];
-
-        if (!empty($request->getHeaders()['authorization'])) {
-            $userData = $request->getHeaders()['authorization'][0];
-        }
+        $userData = self::getTokenSession();
 
         if (empty($userData)) {
             return false;
@@ -39,33 +50,66 @@ class User extends ActiveRecord
 
         $redis = new \Redis();
         $redis->connect(self::REDIS_CONNECT);
-        $userId = $redis->get(Crypt::encode($userData));
+
+        $token = self::userHashGetToken($userData);
+
+        if (empty($redis->get($token))) {
+            return false;
+        }
+
+        $redis->del($token);
+
+        return true;
+    }
+
+    private static function getTokenSession()
+    {
+        $request = ServerRequestFactory::fromGlobals();
+        $userData = [];
+
+        if (self::WORK_COOKIE) {
+            $userData = $request->getCookieParams()['auth'] ?? [];
+        }
+
+        if (!empty($request->getHeaders()['authorize'][0])) {
+            $userData = $request->getHeaders()['authorize'][0];
+        }
+        return $userData;
+    }
+
+    public static function current(): bool|self
+    {
+        $userData = self::getTokenSession();
+
+        if (empty($userData)) {
+            return false;
+        }
+
+        $redis = new \Redis();
+        $redis->connect(self::REDIS_CONNECT);
+
+        $token = self::userHashGetToken($userData);
+
+        $userId = $redis->get($token);
         return self::find($userId) ?? false;
     }
 
     public static function isAuth(): bool|int
     {
-        $request = ServerRequestFactory::fromGlobals();
-        $userData = $request->getCookieParams()['auth'] ?? [];
-
-        if (empty($userData) && !empty($request->getHeaders()['authorization'])) {
-            $userData = $request->getHeaders()['authorization'][0];
-        }
-
-
+        $userData = self::getTokenSession();
         if (empty($userData)) {
             return false;
         }
 
         $redis = new \Redis();
         $redis->connect('127.0.0.1');
-        $sessionToken = Crypt::encode($userData);
 
-        if (!$redis->get($sessionToken)) {
+        $token = self::userHashGetToken($userData);
+
+        if (!$redis->get($token)) {
             setcookie('auth', '', time()-(self::SESSION_TIME), '/');
         }
-
-        return $redis->get($sessionToken);
+        return $redis->get($token);
     }
 
     public static function getTableName(): string

@@ -4,14 +4,9 @@ namespace Bootstrap;
 
 use App\Http\Middlewares\Middleware;
 use Zend\Diactoros\Response\EmptyResponse;
-use Zend\Diactoros\Response\SapiEmitter;
 
 final class Kernel
 {
-    const X_DEVELOPER = 'Kim_1ne';
-
-    private \Zend\Diactoros\Response $response;
-
     public function start(): void
     {
         $dispatcher = Dispatcher::return();
@@ -34,18 +29,11 @@ final class Kernel
         $controllerName = $dispatcher->controllerName;
         $action = $dispatcher->action;
         $controller = new $controllerName();
-        $response = $controller->$action(...$dispatcher->matches);
 
-        if ($response instanceof \Zend\Diactoros\Response) {
-            $this->response = $response->withHeader('X-Developer', self::X_DEVELOPER);
+        if (empty($action)) {
+            $controller(...$dispatcher->matches);
         } else {
-            $this->response = new EmptyResponse();
+            $controller->$action(...$dispatcher->matches);
         }
-    }
-
-    private function emit()
-    {
-        $emit = new SapiEmitter();
-        $emit->emit($this->response);
     }
 }

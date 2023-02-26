@@ -12,7 +12,7 @@ abstract class ActiveRecord implements \JsonSerializable
     protected string $created_at;
     protected ?string $updated_at;
 
-    public function __get($name): mixed
+    public function __get($name)
     {
         return $this->$name;
     }
@@ -51,6 +51,16 @@ abstract class ActiveRecord implements \JsonSerializable
             $new[] = $column;
         }
         return $new;
+    }
+
+    public function toArray()
+    {
+        $data = [];
+        foreach ($this->getColumn() as $propName) {
+            if ($this instanceof User && $propName === 'password') continue;
+            $data[$propName] = $this->$propName ?? null;
+        }
+        return $data;
     }
 
     public function save(): static
@@ -135,7 +145,7 @@ abstract class ActiveRecord implements \JsonSerializable
         $sql = "SELECT COUNT($column) as count FROM " . static::getTableName() . " WHERE login = '$value';";
         $db = Db::getInstance();
         $db->sql($sql);
-        if ($db->fetch()['count'] <= 1) return false;
+        if ($db->fetch()['count'] >= 1) return false;
         return true;
     }
 

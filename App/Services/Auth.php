@@ -3,36 +3,34 @@
 
 namespace App\Services;
 
-use App\Exceptions\UserException;
 use App\Models\User;
+use Bootstrap\Response;
 
 class Auth
 {
-    public static function auth(array $data): bool
+    public static function auth(array $data): User
     {
         if (User::isAuth()) {
             header('Location: /');
         }
 
         if (empty($data['login'])) {
-            throw new UserException('Введите login');
+            Response::json(['status' => 'error', 'message' => 'Введите login']);
         }
         if (empty($data['password'])) {
-            throw new UserException('Введите Пароль');
+            Response::json(['status' => 'error', 'message' => 'Введите Пароль']);
         }
 
         $user = User::findByColumn('login', $data['login']);
 
         if (!$user) {
-            throw new UserException('Пользователя не существует');
+            Response::json(['status' => 'error', 'message' => 'Пользователя не существует']);
         }
 
         if (!password_verify($data['password'], $user->password)) {
-            throw new UserException('Неверный пароль');
+            Response::json(['status' => 'error', 'message' => 'Неверный пароль']);
         }
 
-        $user->authorize();
-
-        return true;
+        return $user;
     }
 }
