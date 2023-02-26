@@ -23,7 +23,7 @@ class MainController
 
         $db = Db::getInstance();
         $tasks = $db->sql($select->build())->fetchAll();
-        return view('task', ['tasks' => $tasks]);
+        Response::json(['status' => 'success', 'data' => $tasks]);
     }
 
     public function categories()
@@ -35,7 +35,7 @@ class MainController
         $db = Db::getInstance();
         $db->sql($sql);
         $categories = $db->fetchAll();
-        return view('categories', ['categories' => $categories]);
+        Response::json(['status' => 'success', 'data' => $categories]);
     }
 
     public function create()
@@ -51,7 +51,7 @@ class MainController
         $category->set('category_name', $post['category_name']);
         $category->set('user_id', User::isAuth());
         $category->save();
-        Response::json($category->toArray());
+        Response::json(['status' => 'success', 'data' => $category->toArray()]);
     }
 
     public function delete(int $id)

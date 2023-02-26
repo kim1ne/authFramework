@@ -20,7 +20,7 @@ Route::delete('/users', [\App\Http\Controllers\User\MainController::class, 'dele
 
 Route::put('/tasks/update/status/(\d+)', \App\Http\Controllers\Tasks\MainController::class)->middleware('auth');
 Route::get('/category/(\d+)/task/(\d+)', [\App\Http\Controllers\Tasks\MainController::class, 'index'])->middleware('auth');
-Route::post('task', [\App\Http\Controllers\Tasks\MainController::class, 'create'])->middleware('auth');
-Route::put('task', [\App\Http\Controllers\Tasks\MainController::class, 'update'])->middleware('auth');
-Route::delete('task', [\App\Http\Controllers\Tasks\MainController::class, 'delete'])->middleware('auth');
+Route::post('/task', [\App\Http\Controllers\Tasks\MainController::class, 'create'])->middleware('auth');
+Route::put('/task', [\App\Http\Controllers\Tasks\MainController::class, 'update'])->middleware('auth');
+Route::delete('/task', [\App\Http\Controllers\Tasks\MainController::class, 'delete'])->middleware('auth');
 

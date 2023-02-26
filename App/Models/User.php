@@ -10,7 +10,6 @@ class User extends ActiveRecord
     const SESSION_TIME = 60 * 60 * 24;
     const SECRET_KEY = 'B3EhZ1oQArNRqJJJlWhu';
     const REDIS_CONNECT = '127.0.0.1';
-    const WORK_COOKIE = false;
 
     protected string $login;
     protected string $password;
@@ -29,9 +28,8 @@ class User extends ActiveRecord
         $currentDate = time();
         $token = trim($currentDate) . '.' . trim($this->login) . '.' . $encode;
 
-        if (self::WORK_COOKIE) {
-            setcookie('auth', $token, time() + self::SESSION_TIME, '/');
-        }
+
+        setcookie('auth', $token, time() + self::SESSION_TIME, '/');
 
         $redis = new \Redis();
         $redis->connect(self::REDIS_CONNECT);
@@ -65,11 +63,8 @@ class User extends ActiveRecord
     private static function getTokenSession()
     {
         $request = ServerRequestFactory::fromGlobals();
-        $userData = [];
 
-        if (self::WORK_COOKIE) {
-            $userData = $request->getCookieParams()['auth'] ?? [];
-        }
+        $userData = $request->getCookieParams()['auth'] ?? [];
 
         if (!empty($request->getHeaders()['authorize'][0])) {
             $userData = $request->getHeaders()['authorize'][0];
